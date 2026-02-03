@@ -40,17 +40,17 @@ class RegexFormatRule : FormatRule() {
 
         var result = finalFormat
 
-        for (i in 1..matcher.groupCount()) {
-            val capturedText = matcher.group(i)
+        for (i in matcher.groupCount() downTo 1) {
+            val capturedText = matcher.group(i) ?: ""
             var replacementText = capturedText
 
             groupFormatting[i]?.let { conditionalFormats ->
                 replacementText = when {
                     conditionalFormats.containsKey(capturedText) ->
-                        conditionalFormats[capturedText]?.replace($$"${str}", capturedText) ?: capturedText
+                        conditionalFormats[capturedText]?.replace("\${str}", capturedText) ?: capturedText
 
                     conditionalFormats.containsKey("defaultStr") ->
-                        conditionalFormats["defaultStr"]?.replace($$"${str}", capturedText) ?: capturedText
+                        conditionalFormats["defaultStr"]?.replace("\${str}", capturedText) ?: capturedText
 
                     else -> capturedText
                 }
