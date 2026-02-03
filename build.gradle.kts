@@ -1,3 +1,4 @@
+import net.fabricmc.loom.task.RemapJarTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -59,19 +60,33 @@ dependencies {
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
 }
 
-tasks.shadowJar {
-    // Make sure to relocate MoulConfig to avoid version clashes with other mods
-    configurations = listOf(shadowModImpl)
-    relocate("io.github.notenoughupdates.moulconfig", "io.github.ricciow.moulconfig")
+val remapJar by tasks.named<RemapJarTask>("remapJar") {
+    archiveClassifier.set("")
+    dependsOn(tasks.shadowJar)
+    inputFile.set(tasks.shadowJar.get().archiveFile)
+    destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
 }
 
-tasks {
-    processResources {
-        inputs.property("version", project.version)
+tasks.shadowJar {
+    destinationDirectory.set(layout.buildDirectory.dir("libs/badjars"))
+    archiveClassifier.set("all-dev")
+    configurations = listOf(shadowModImpl)
+    relocate("io.github.notenoughupdates.moulconfig", "io.github.ricciow.moulconfig")
+    mergeServiceFiles()
+}
 
-        filesMatching("fabric.mod.json") {
-            expand(getProperties())
-            expand(mutableMapOf("version" to project.version))
-        }
+tasks.jar {
+    archiveClassifier.set("nodeps")
+    destinationDirectory.set(layout.buildDirectory.dir("libs/badjars"))
+}
+
+tasks.assemble.get().dependsOn(tasks.remapJar)
+
+tasks.processResources {
+    inputs.property("version", project.version)
+
+    filesMatching("fabric.mod.json") {
+        expand(getProperties())
+        expand(mutableMapOf("version" to project.version))
     }
 }
