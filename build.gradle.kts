@@ -8,7 +8,9 @@ plugins {
 }
 
 group = property("maven_group")!!
-version = property("mod_version")!!
+version = "${property("mod_version")}+${stonecutter.current.version}"
+
+base.archivesName = property("mod_id") as String
 
 val requiredJava = when {
     stonecutter.eval(stonecutter.current.version, ">=1.20.6") -> JavaVersion.VERSION_21
