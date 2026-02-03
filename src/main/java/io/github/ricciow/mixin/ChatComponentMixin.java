@@ -4,20 +4,20 @@ import com.llamalad7.mixinextras.sugar.Local;
 import io.github.ricciow.util.ChatUtils;
 import io.github.ricciow.util.message.IChatHudLineKt;
 import io.github.ricciow.util.message.IdentifiableChatHud;
-import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.client.gui.hud.ChatHudLine;
+import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.client.GuiMessage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ChatHud.class)
-public abstract class ChatHudMixin implements IdentifiableChatHud {
+@Mixin(ChatComponent.class)
+public abstract class ChatComponentMixin implements IdentifiableChatHud {
     @Inject(
-            method = "addMessage(Lnet/minecraft/client/gui/hud/ChatHudLine;)V",
+            method = "addMessageToQueue(Lnet/minecraft/client/GuiMessage;)V",
             at = @At("HEAD")
     )
-    private void onAddNewChatHudLine(ChatHudLine line, CallbackInfo ci) {
+    private void onAddNewChatHudLine(GuiMessage line, CallbackInfo ci) {
         var id = ChatUtils.INSTANCE.getNextMessageId();
 
         if (id != 0) {
@@ -27,21 +27,21 @@ public abstract class ChatHudMixin implements IdentifiableChatHud {
     }
 
     @Inject(
-            method = "addMessage(Lnet/minecraft/client/gui/hud/ChatHudLine;)V",
+            method = "addMessageToQueue(Lnet/minecraft/client/GuiMessage;)V",
             at = @At("TAIL")
     )
-    private void onTail(ChatHudLine msg, CallbackInfo ci) {
+    private void onTail(GuiMessage msg, CallbackInfo ci) {
         ChatUtils.INSTANCE.setNextMessageId(-1);
     }
 
     @Inject(
-            method = "refresh",
+            method = "refreshTrimmedMessages",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/hud/ChatHud;addVisibleMessage(Lnet/minecraft/client/gui/hud/ChatHudLine;)V"
+                    target = "Lnet/minecraft/client/gui/components/ChatComponent;addMessageToDisplayQueue(Lnet/minecraft/client/GuiMessage;)V"
             )
     )
-    private void onRefresh(CallbackInfo ci, @Local ChatHudLine line) {
+    private void onRefresh(CallbackInfo ci, @Local GuiMessage line) {
         var id = IChatHudLineKt.cast(line).pridge$getIdentifier();
 
         if (id != 0) {

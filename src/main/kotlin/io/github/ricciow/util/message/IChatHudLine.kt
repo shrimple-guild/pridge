@@ -1,6 +1,6 @@
 package io.github.ricciow.util.message
 
-import net.minecraft.client.gui.hud.ChatHudLine
+import net.minecraft.client.GuiMessage
 
 interface IChatHudLine {
     fun `pridge$getIdentifier`(): Int
@@ -8,10 +8,10 @@ interface IChatHudLine {
     fun `pridge$setIdentifier`(identifier: Int)
 }
 
-inline var ChatHudLine.pridgeId
+inline var GuiMessage.pridgeId
     get() = cast().`pridge$getIdentifier`()
     set(value) = cast().`pridge$setIdentifier`(value)
 
-fun ChatHudLine.cast(): IChatHudLine {
+fun GuiMessage.cast(): IChatHudLine {
     return this as IChatHudLine
 }

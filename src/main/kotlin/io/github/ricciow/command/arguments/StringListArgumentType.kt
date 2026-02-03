@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.github.ricciow.util.toText
-import net.minecraft.command.CommandSource
+import net.minecraft.commands.SharedSuggestionProvider
 import java.util.concurrent.CompletableFuture
 
 class StringListArgumentType(private val stringList: List<String>) : ArgumentType<String> {
@@ -25,6 +25,6 @@ class StringListArgumentType(private val stringList: List<String>) : ArgumentTyp
         context: CommandContext<S>,
         builder: SuggestionsBuilder
     ): CompletableFuture<Suggestions> {
-        return CommandSource.suggestMatching(stringList, builder)
+        return SharedSuggestionProvider.suggest(stringList, builder)
     }
 }

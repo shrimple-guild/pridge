@@ -1,24 +1,24 @@
 package io.github.ricciow.util.message
 
-import net.minecraft.client.gui.hud.ChatHud
-import net.minecraft.text.Text
+import net.minecraft.client.gui.components.ChatComponent
+import net.minecraft.network.chat.Component
 
 interface IdentifiableChatHud {
-    fun `pridge$addIdentifiableMessage`(id: Int, message: Text)
+    fun `pridge$addIdentifiableMessage`(id: Int, message: Component)
 
     fun `pridge$removeIdentifiableMessage`(id: Int)
 
-    fun `pridge$replaceIdentifiableMessage`(id: Int, message: Text)
+    fun `pridge$replaceIdentifiableMessage`(id: Int, message: Component)
 }
 
-fun ChatHud.addIdentifiableMessage(id: Int, message: Text) {
+fun ChatComponent.addIdentifiableMessage(id: Int, message: Component) {
     return (this as IdentifiableChatHud).`pridge$addIdentifiableMessage`(id, message)
 }
 
-fun ChatHud.removeIdentifiableMessage(id: Int) {
+fun ChatComponent.removeIdentifiableMessage(id: Int) {
     return (this as IdentifiableChatHud).`pridge$removeIdentifiableMessage`(id)
 }
 
-fun ChatHud.replaceIdentifiableMessage(id: Int, message: Text) {
+fun ChatComponent.replaceIdentifiableMessage(id: Int, message: Component) {
     return (this as IdentifiableChatHud).`pridge$replaceIdentifiableMessage`(id, message)
 }

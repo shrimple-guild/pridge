@@ -2,15 +2,15 @@ package io.github.ricciow.rendering
 
 import io.github.ricciow.Pridge.mc
 import io.github.ricciow.util.PridgeLogger
-import net.minecraft.client.gl.RenderPipelines
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.RenderTickCounter
-import net.minecraft.client.texture.NativeImage
-import net.minecraft.client.texture.NativeImageBackedTexture
-import net.minecraft.client.util.InputUtil
-import net.minecraft.text.ClickEvent.OpenUrl
-import net.minecraft.util.Identifier
+import net.minecraft.client.renderer.RenderPipelines
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.DeltaTracker
+import com.mojang.blaze3d.platform.NativeImage
+import net.minecraft.client.renderer.texture.DynamicTexture
+import com.mojang.blaze3d.platform.InputConstants
+import net.minecraft.network.chat.ClickEvent.OpenUrl
+import net.minecraft.resources.ResourceLocation
 import org.apache.commons.io.IOUtils
 import org.lwjgl.glfw.GLFW
 import java.net.HttpURLConnection
@@ -28,17 +28,17 @@ class ImagePreviewRenderer {
     private var imageHeight = 100
     private var hasTexture = false
 
-    fun onHudRender(drawContext: DrawContext, tickCounter: RenderTickCounter) {
-        if (!mc.inGameHud.chatHud.isChatFocused) {
+    fun onHudRender(drawContext: GuiGraphics, tickCounter: DeltaTracker) {
+        if (!mc.gui.chat.isChatFocused) {
             if (this.hasTexture) {
                 clearTexture()
             }
             return
         }
 
-        val mouseX = mc.mouse.x * mc.window.scaledWidth.toDouble() / mc.window.width
-        val mouseY = mc.mouse.y * mc.window.scaledHeight.toDouble() / mc.window.height
-        val style = mc.inGameHud.chatHud.getTextStyleAt(mouseX, mouseY)
+        val mouseX = mc.mouseHandler.xpos() * mc.window.guiScaledWidth.toDouble() / mc.window.screenWidth
+        val mouseY = mc.mouseHandler.ypos() * mc.window.guiScaledHeight.toDouble() / mc.window.screenHeight
+        val style = mc.gui.chat.getClickedComponentStyleAt(mouseX, mouseY)
 
         var url: String? = null
         if (style != null) {
@@ -146,8 +146,8 @@ class ImagePreviewRenderer {
     private fun registerTexture(image: NativeImage) {
         this.imageWidth = image.width
         this.imageHeight = image.height
-        val texture = NativeImageBackedTexture({ PREVIEW_TEXTURE_ID.toString() }, image)
-        mc.textureManager.registerTexture(PREVIEW_TEXTURE_ID, texture)
+        val texture = DynamicTexture({ PREVIEW_TEXTURE_ID.toString() }, image)
+        mc.textureManager.register(PREVIEW_TEXTURE_ID, texture)
         this.hasTexture = true
     }
 
@@ -156,29 +156,29 @@ class ImagePreviewRenderer {
             this.hasTexture = false
             mc.execute {
                 if (mc.textureManager.getTexture(PREVIEW_TEXTURE_ID) != null) {
-                    mc.textureManager.destroyTexture(PREVIEW_TEXTURE_ID)
+                    mc.textureManager.release(PREVIEW_TEXTURE_ID)
                 }
             }
         }
     }
 
-    private fun renderPreview(drawContext: DrawContext) {
-        val screenWidth = mc.window.scaledWidth
-        val screenHeight = mc.window.scaledHeight
+    private fun renderPreview(drawContext: GuiGraphics) {
+        val screenWidth = mc.window.guiScaledWidth
+        val screenHeight = mc.window.guiScaledHeight
         val aspectRatio = imageWidth.toFloat() / imageHeight
         var desiredWidth = screenWidth * 0.5f
 
         val handle = mc.window
-        if (InputUtil.isKeyPressed(handle, GLFW.GLFW_KEY_LEFT_SHIFT) &&
-            InputUtil.isKeyPressed(handle, GLFW.GLFW_KEY_LEFT_CONTROL)
+        if (InputConstants.isKeyDown(handle, GLFW.GLFW_KEY_LEFT_SHIFT) &&
+            InputConstants.isKeyDown(handle, GLFW.GLFW_KEY_LEFT_CONTROL)
         ) {
             desiredWidth = screenWidth * 0.75f
         } else {
-            if (InputUtil.isKeyPressed(handle, GLFW.GLFW_KEY_LEFT_SHIFT)) {
+            if (InputConstants.isKeyDown(handle, GLFW.GLFW_KEY_LEFT_SHIFT)) {
                 desiredWidth = screenWidth * 0.25f
             }
 
-            if (InputUtil.isKeyPressed(handle, GLFW.GLFW_KEY_LEFT_CONTROL)) {
+            if (InputConstants.isKeyDown(handle, GLFW.GLFW_KEY_LEFT_CONTROL)) {
                 desiredWidth = this.imageWidth.toFloat()
             }
         }
@@ -191,7 +191,7 @@ class ImagePreviewRenderer {
         }
         val intWidth = finalWidth.toInt()
         val intHeight = finalHeight.toInt()
-        drawContext.drawTexture(
+        drawContext.blit(
             RenderPipelines.GUI_TEXTURED,
             PREVIEW_TEXTURE_ID,
             0, 0,
@@ -205,6 +205,6 @@ class ImagePreviewRenderer {
         private val OGP_IMAGE_REGEX =
             Pattern.compile("<meta property=\"(?:og:image|twitter:image)\" content=\"(?<url>.+?)\".*?/?>")
         private val IMG_TAG_REGEX = Pattern.compile("<img.*?src=\"(?<url>.+?)\".*?>")
-        private val PREVIEW_TEXTURE_ID = Identifier.of("image_preview", "preview_texture")
+        private val PREVIEW_TEXTURE_ID = ResourceLocation.fromNamespaceAndPath("image_preview", "preview_texture")
     }
 }

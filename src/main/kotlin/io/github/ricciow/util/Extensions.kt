@@ -3,10 +3,10 @@ package io.github.ricciow.util
 import io.github.notenoughupdates.moulconfig.Config
 import io.github.notenoughupdates.moulconfig.managed.ManagedConfig
 import io.github.ricciow.Pridge.mc
-import net.minecraft.client.network.ClientPlayerEntity
-import net.minecraft.text.MutableText
-import net.minecraft.text.Style
-import net.minecraft.text.Text
+import net.minecraft.client.player.LocalPlayer
+import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.chat.Style
+import net.minecraft.network.chat.Component
 
 enum class ChatType(val prefix: String) {
     ALL("/ac"),
@@ -15,26 +15,26 @@ enum class ChatType(val prefix: String) {
     PRIVATE("/msg")
 }
 
-fun ClientPlayerEntity?.chatHypixel(type: ChatType, message: String?) {
+fun LocalPlayer?.chatHypixel(type: ChatType, message: String?) {
     if (message != null) {
         sendCommand("${type.prefix} $message")
     }
 }
 
-fun ClientPlayerEntity?.sendCommand(command: String) {
-    this?.networkHandler?.sendChatCommand(command.substring(1))
+fun LocalPlayer?.sendCommand(command: String) {
+    this?.connection?.sendCommand(command.substring(1))
 }
 
-fun ClientPlayerEntity?.sendMessage(message: String) {
+fun LocalPlayer?.sendMessage(message: String) {
     if (message.startsWith("/")) {
         sendCommand(message)
     } else {
-        this?.networkHandler?.sendChatMessage(message)
+        this?.connection?.sendChat(message)
     }
 }
 
 fun <T : Config> ManagedConfig<T>.scheduleConfigOpen() {
-    mc.send { openConfigGui() }
+    mc.schedule { openConfigGui() }
 }
 
-fun String.toText(style: Style = Style.EMPTY): MutableText = Text.literal(this).setStyle(style)
+fun String.toText(style: Style = Style.EMPTY): MutableComponent = Component.literal(this).setStyle(style)

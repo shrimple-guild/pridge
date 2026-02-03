@@ -1,7 +1,7 @@
 package io.github.ricciow.util.message
 
-import net.minecraft.text.Text
-import net.minecraft.text.TextColor
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.TextColor
 
 object PagedMessageFactory {
     private val pagedMessages = mutableMapOf<Int, PagedMessage>()
@@ -13,22 +13,22 @@ object PagedMessageFactory {
      * Creates a paged message, only the last sent paged message will be able to change pages.
      */
     fun createPagedMessage(
-        pages: MutableList<Text>,
-        title: Text,
+        pages: MutableList<Component>,
+        title: Component,
         arrowColor: TextColor,
         disabledArrowColor: TextColor,
-        prefix: Text
+        prefix: Component
     ) {
         val pagedMessage = PagedMessage(pages, title, arrowColor, disabledArrowColor, prefix)
         pagedMessages[pagedMessage.id] = pagedMessage
     }
 
     fun createPagedMessage(
-        pages: MutableList<Text>,
-        titles: MutableList<Text>,
+        pages: MutableList<Component>,
+        titles: MutableList<Component>,
         arrowColor: TextColor,
         disabledArrowColor: TextColor,
-        prefix: Text
+        prefix: Component
     ) {
         val pagedMessage = PagedMessage(pages, titles, arrowColor, disabledArrowColor, prefix)
         pagedMessages[pagedMessage.id] = pagedMessage

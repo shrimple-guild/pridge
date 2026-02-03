@@ -7,12 +7,12 @@ import io.github.ricciow.util.PridgeLogger
 import io.github.ricciow.util.TextParser.parse
 import io.github.ricciow.util.UrlFormatter
 import io.github.ricciow.util.toText
-import net.minecraft.text.ClickEvent.OpenUrl
-import net.minecraft.text.HoverEvent.ShowText
-import net.minecraft.text.Style
-import net.minecraft.text.Text
-import net.minecraft.text.TextColor
-import net.minecraft.util.Formatting
+import net.minecraft.network.chat.ClickEvent.OpenUrl
+import net.minecraft.network.chat.HoverEvent.ShowText
+import net.minecraft.network.chat.Style
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.TextColor
+import net.minecraft.ChatFormatting
 import java.net.URI
 import java.util.*
 import java.util.regex.Matcher
@@ -81,7 +81,7 @@ object SpecialFunctions {
      * In a real mod, this would involve creating chat components with click events.
      * @return A formatted string or null if no links are found.
      */
-    private fun formatLink(originalText: String, matcher: Matcher): Text {
+    private fun formatLink(originalText: String, matcher: Matcher): Component {
         if (CONFIG_I.linkCategory.enabled) {
             var representation = CONFIG_I.linkCategory.representation
             val group = matcher.group(1)
@@ -187,7 +187,7 @@ object SpecialFunctions {
         val bestiaryDataPattern = Pattern.compile("(\\w[\\w\\s]*?) (\\d+)/(\\d+)(?: \\(([\\d.]+)\\))?")
 
         val prefix = parse("\n &6&l$bestiary bestiary - &f&l$user (&f&l$profile)&6&l\n ")
-        val pages = mutableListOf<Text>()
+        val pages = mutableListOf<Component>()
         val currentPageContent = StringBuilder()
         var entriesOnPage = 0
 
@@ -237,14 +237,14 @@ object SpecialFunctions {
             pages.add(parse(currentPageContent.toString()))
         }
 
-        val titles = mutableListOf<Text>()
+        val titles = mutableListOf<Component>()
         for (i in 1..pages.size) {
             titles.add(parse("&6Page ($i/${pages.size})"))
         }
 
         return FormatResult(
-            pages, titles, TextColor.fromFormatting(Formatting.DARK_AQUA)!!,
-            TextColor.fromFormatting(Formatting.GRAY)!!, prefix, botText = true,
+            pages, titles, TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA)!!,
+            TextColor.fromLegacyFormat(ChatFormatting.GRAY)!!, prefix, botText = true,
             officer = officer
         )
     }
@@ -277,7 +277,7 @@ object SpecialFunctions {
 
         val prefix = parse("\n &6&l${capitalizeFirstLetter(skill)} collections - &f&l$user (&f&l$profile)&6&l\n ")
 
-        val pages = mutableListOf<Text>()
+        val pages = mutableListOf<Component>()
         val currentPageContent = StringBuilder()
         var entriesOnPage = 0
 
@@ -330,15 +330,15 @@ object SpecialFunctions {
         }
 
         // This logic for generating titles remains the same.
-        val titles = mutableListOf<Text>()
+        val titles = mutableListOf<Component>()
         for (i in 1..pages.size) {
             titles.add(parse("&6Page ($i/${pages.size})"))
         }
 
         // The return statement is the same.
         return FormatResult(
-            pages, titles, TextColor.fromFormatting(Formatting.DARK_AQUA)!!,
-            TextColor.fromFormatting(Formatting.GRAY)!!, prefix, botText = true,
+            pages, titles, TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA)!!,
+            TextColor.fromLegacyFormat(ChatFormatting.GRAY)!!, prefix, botText = true,
             officer = officer
         )
     }

@@ -9,8 +9,8 @@ import io.github.ricciow.util.*
 import io.github.ricciow.util.TextParser.parse
 import io.github.ricciow.util.TextParser.parseHoverable
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
-import net.minecraft.text.Text
-import net.minecraft.util.Formatting
+import net.minecraft.network.chat.Component
+import net.minecraft.ChatFormatting
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -98,14 +98,14 @@ object ChatManager {
         }
     }
 
-    fun onReceiveChatMessage(message: Text, overlay: Boolean): Boolean/*true=show original in chat*/ {
+    fun onReceiveChatMessage(message: Component, overlay: Boolean): Boolean/*true=show original in chat*/ {
         try {
             if (!CONFIG_I.developerCategory.enabled) return true
             if (overlay) return true
 
             PridgeLogger.dev("Received message: $message")
 
-            val cleanRawMessage = Formatting.strip(message.string) ?: return true
+            val cleanRawMessage = ChatFormatting.stripFormatting(message.string) ?: return true
 
             //Word filters
             val wordFilters = CONFIG_I.filtersCategory.rawFilter
@@ -155,7 +155,7 @@ object ChatManager {
         return true
     }
 
-    private fun onReceiveGuildMessage(originalMessage: Text, guildMatcher: Matcher, officer: Boolean): Boolean {
+    private fun onReceiveGuildMessage(originalMessage: Component, guildMatcher: Matcher, officer: Boolean): Boolean {
         val userInfo = guildMatcher.group(1).trim()
         var chatContent = guildMatcher.group(2).trim()
 
@@ -204,7 +204,7 @@ object ChatManager {
         }
     }
 
-    private fun onReceivePlayerMessage(originalMessage: Text, officer: Boolean): Boolean {
+    private fun onReceivePlayerMessage(originalMessage: Component, officer: Boolean): Boolean {
         if (!CONFIG_I.guildCategory.modifyNormalGuildMessages) return true
         val message = if (officer) {
             originalMessage.string.replace("§3Officer >", CONFIG_I.guildCategory.officerName)
@@ -215,7 +215,7 @@ object ChatManager {
         return false
     }
 
-    private fun onReceiveStatusMessage(originalMessage: Text, matcher: Matcher): Boolean {
+    private fun onReceiveStatusMessage(originalMessage: Component, matcher: Matcher): Boolean {
         if (CONFIG_I.guildCategory.modifyJoinLeave) {
             val guildTag =
                 if (CONFIG_I.guildCategory.modifyNormalGuildMessages) CONFIG_I.guildCategory.name else "&2Guild >"
@@ -234,7 +234,7 @@ object ChatManager {
         return true
     }
 
-    private fun onReceivePrivateMessage(originalMessage: Text, matcher: Matcher): Boolean {
+    private fun onReceivePrivateMessage(originalMessage: Component, matcher: Matcher): Boolean {
         if (CONFIG_I.guildCategory.thanksForTheBoop) {
             val userInfo = matcher.group(1).trim()
 

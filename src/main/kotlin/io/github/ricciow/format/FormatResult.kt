@@ -3,19 +3,19 @@ package io.github.ricciow.format
 import io.github.ricciow.Pridge.CONFIG_I
 import io.github.ricciow.util.TextParser.parse
 import io.github.ricciow.util.message.PagedMessageFactory
-import net.minecraft.text.MutableText
-import net.minecraft.text.Text
-import net.minecraft.text.TextColor
+import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.TextColor
 
 class FormatResult {
-    private var finalText: Text? = null
+    private var finalText: Component? = null
     var discordText: Boolean
     var botText: Boolean
     var officer: Boolean
 
     private var disableOutput = false
 
-    constructor(finalText: Text, discordText: Boolean = false, botText: Boolean = false, officer: Boolean = false) {
+    constructor(finalText: Component, discordText: Boolean = false, botText: Boolean = false, officer: Boolean = false) {
         this.finalText = finalText
         this.discordText = discordText
         this.botText = botText
@@ -38,11 +38,11 @@ class FormatResult {
      * Result for a paged message with a singular title
      */
     constructor(
-        pages: MutableList<Text>,
-        title: Text,
+        pages: MutableList<Component>,
+        title: Component,
         arrowColor: TextColor,
         disabledArrowColor: TextColor,
-        prefix: Text?,
+        prefix: Component?,
         discordText: Boolean = false,
         botText: Boolean = false,
         officer: Boolean = false
@@ -65,11 +65,11 @@ class FormatResult {
      * Result for a paged message with multiple titles
      */
     constructor(
-        pages: MutableList<Text>,
-        title: MutableList<Text>,
+        pages: MutableList<Component>,
+        title: MutableList<Component>,
         arrowColor: TextColor,
         disabledArrowColor: TextColor,
-        prefix: Text?,
+        prefix: Component?,
         discordText: Boolean = false,
         botText: Boolean = false,
         officer: Boolean = false
@@ -89,7 +89,7 @@ class FormatResult {
     }
 
 
-    fun getPrefix(): MutableText {
+    fun getPrefix(): MutableComponent {
         val prefix = StringBuilder(if (this.officer) {
             CONFIG_I.guildCategory.officerName
         } else {
@@ -106,12 +106,15 @@ class FormatResult {
         return parse(prefix.toString())
     }
 
-    fun getText(): Text? {
+    fun getText(): Component? {
         if (disableOutput) return null
 
         val mainText = getPrefix()
         mainText.append(" ")
-        return mainText.append(finalText)
+        if (finalText != null) {
+            mainText.append(finalText!!)
+        }
+        return mainText
     }
 
     override fun toString(): String {

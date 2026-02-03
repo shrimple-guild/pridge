@@ -1,10 +1,10 @@
 package io.github.ricciow.mixin;
 
-import net.minecraft.client.sound.Sound;
-import net.minecraft.client.sound.SoundManager;
-import net.minecraft.client.sound.WeightedSoundSet;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.floatprovider.ConstantFloatProvider;
+import net.minecraft.client.resources.sounds.Sound;
+import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.client.sounds.WeighedSoundEvents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.valueproviders.ConstantFloat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,17 +17,17 @@ public class SoundManagerMixin {
     @Unique
     private static final String DYNAMIC_SOUND_NAMESPACE = "dynamicsound";
 
-    @Inject(method = "get", at = @At("HEAD"), cancellable = true)
-    private void onGetSound(Identifier id, CallbackInfoReturnable<WeightedSoundSet> cir) {
+    @Inject(method = "getSoundEvent", at = @At("HEAD"), cancellable = true)
+    private void onGetSound(ResourceLocation id, CallbackInfoReturnable<WeighedSoundEvents> cir) {
         if (!id.getNamespace().equals(DYNAMIC_SOUND_NAMESPACE)) return;
 
-        WeightedSoundSet soundSet = new WeightedSoundSet(id, null);
-        soundSet.add(new Sound(
+        WeighedSoundEvents soundSet = new WeighedSoundEvents(id, null);
+        soundSet.addSound(new Sound(
                 id,
-                ConstantFloatProvider.create(1.0F),
-                ConstantFloatProvider.create(1.0F),
+                ConstantFloat.of(1.0F),
+                ConstantFloat.of(1.0F),
                 1,
-                Sound.RegistrationType.FILE,
+                Sound.Type.FILE,
                 false,
                 false,
                 16

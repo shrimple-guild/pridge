@@ -1,15 +1,15 @@
 package io.github.ricciow.util.message
 
 import io.github.ricciow.util.ChatUtils
-import net.minecraft.text.Text
+import net.minecraft.network.chat.Component
 
-class ModifiableMessage(private var text: Text, private val id: Int) {
+class ModifiableMessage(private var text: Component, private val id: Int) {
 
     init {
         updateMessage(false)
     }
 
-    fun modify(text: Text) {
+    fun modify(text: Component) {
         this.text = text
         updateMessage(true)
     }

@@ -6,12 +6,13 @@ import io.github.ricciow.Pridge.MOD_ID
 import io.github.ricciow.Pridge.mc
 import io.github.ricciow.util.PridgeLogger
 import net.fabricmc.loader.api.FabricLoader
-import net.minecraft.client.sound.PositionedSoundInstance
-import net.minecraft.sound.SoundEvent
-import net.minecraft.util.Identifier
+import net.minecraft.client.resources.sounds.SimpleSoundInstance
+import net.minecraft.sounds.SoundEvent
+import net.minecraft.resources.ResourceLocation
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
+import java.util.Optional
 import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
@@ -31,8 +32,8 @@ object DynamicSoundPlayer {
             return
         }
 
-        val soundInstance = PositionedSoundInstance.master(
-            SoundEvent(Identifier.of("dynamicsound", fileName), null),
+        val soundInstance = SimpleSoundInstance.forUI(
+            SoundEvent(ResourceLocation.fromNamespaceAndPath("dynamicsound", fileName), Optional.empty<Float>()),
             CONFIG_I.soundsCategory.getVolume(),
             1.0f
         )

@@ -1,12 +1,12 @@
 package io.github.ricciow.mixin;
 
 import io.github.ricciow.util.message.IChatHudLine;
-import net.minecraft.client.gui.hud.ChatHudLine;
+import net.minecraft.client.GuiMessage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(ChatHudLine.class)
-public class ChatHudLineMixin implements IChatHudLine {
+@Mixin(GuiMessage.class)
+public class GuiMessageMixin implements IChatHudLine {
     @Unique
     private int pridge$identifier;
 

@@ -1,17 +1,18 @@
 package io.github.ricciow.util.message
 
 import io.github.ricciow.util.toText
-import net.minecraft.text.ClickEvent.RunCommand
-import net.minecraft.text.HoverEvent.ShowText
-import net.minecraft.text.Style
-import net.minecraft.text.Text
-import net.minecraft.text.TextColor
+import net.minecraft.network.chat.ClickEvent.RunCommand
+import net.minecraft.network.chat.HoverEvent.ShowText
+import net.minecraft.network.chat.Style
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.chat.TextColor
 
 class PagedMessage {
     val id: Int
-    private val prefix: Text
-    private val pages: MutableList<Text>
-    private val titles: MutableList<Text>
+    private val prefix: Component
+    private val pages: MutableList<Component>
+    private val titles: MutableList<Component>
     private val arrowColor: TextColor
     private val disabledArrowColor: TextColor
     private var pageIndex = 0
@@ -19,11 +20,11 @@ class PagedMessage {
 
     // Single title constructor
     internal constructor(
-        pages: MutableList<Text>,
-        title: Text,
+        pages: MutableList<Component>,
+        title: Component,
         arrowColor: TextColor,
         disabledArrowColor: TextColor,
-        prefix: Text
+        prefix: Component
     ) {
         this.pages = pages
         this.titles = mutableListOf(title)
@@ -37,11 +38,11 @@ class PagedMessage {
 
     // Multi-title constructor
     internal constructor(
-        pages: MutableList<Text>,
-        titles: MutableList<Text>,
+        pages: MutableList<Component>,
+        titles: MutableList<Component>,
         arrowColor: TextColor,
         disabledArrowColor: TextColor,
-        prefix: Text
+        prefix: Component
     ) {
         this.pages = pages
         this.titles = titles
@@ -53,15 +54,17 @@ class PagedMessage {
         this.message = ModifiableMessage(buildText(), id)
     }
 
-    private fun buildText(): Text {
-        var title: Text? = null
+    private fun buildText(): Component {
+        var title: Component? = null
         if (pageIndex in 0 until pages.size) {
             title = titles.getOrNull(pageIndex) ?: titles.firstOrNull() ?: "No title found".toText()
         }
 
         val baseText = prefix.copy()
         baseText.append("<< ".toText(buildLeftStyle()))
-        baseText.append(title)
+        if (title != null) {
+            baseText.append(title)
+        }
         baseText.append(" >>".toText(buildRightStyle()))
         baseText.append("\n")
         baseText.append(pages[pageIndex])
@@ -133,8 +136,8 @@ class PagedMessage {
                 ${titleAndPageList.joinToString("\n")}
             }
             Current Page Index: $pageIndex
-            Arrow Color: ${arrowColor.name}
-            Disabled Arrow Color: ${disabledArrowColor.name}
+            Arrow Color: ${arrowColor.serialize()}
+            Disabled Arrow Color: ${disabledArrowColor.serialize()}
         }
         """.trimIndent()
         return toString
