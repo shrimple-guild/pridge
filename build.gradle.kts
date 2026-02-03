@@ -4,6 +4,7 @@ plugins {
     java
     kotlin("jvm")
     id("fabric-loom")
+    id("com.gradleup.shadow") version "9.3.1"
 }
 
 group = property("maven_group")!!
@@ -24,6 +25,10 @@ repositories {
 
 loom {
     accessWidenerPath.set(file("src/main/resources/pridge.accesswidener"))
+}
+
+val shadowModImpl by configurations.creating {
+    configurations.modImplementation.get().extendsFrom(this)
 }
 
 dependencies {
@@ -49,9 +54,15 @@ dependencies {
 
     modImplementation("net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
 
-    modImplementation("org.notenoughupdates.moulconfig:${property("moulconfig_version")}")
+    shadowModImpl("org.notenoughupdates.moulconfig:${property("moulconfig_version")}")
 
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
+}
+
+tasks.shadowJar {
+    // Make sure to relocate MoulConfig to avoid version clashes with other mods
+    configurations = listOf(shadowModImpl)
+    relocate("io.github.notenoughupdates.moulconfig", "io.github.ricciow.moulconfig")
 }
 
 tasks {
