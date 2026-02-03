@@ -44,8 +44,8 @@ object DynamicSoundPlayer {
 
         val soundInstance = SimpleSoundInstance.forUI(
             soundEvent,
-            CONFIG_I.soundsCategory.getVolume(),
-            1.0f
+            1.0f,
+            CONFIG_I.soundsCategory.getVolume()
         )
 
         // Play the sound using the vanilla SoundManager. Our mixins will do the rest.
