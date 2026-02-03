@@ -4,13 +4,18 @@ import io.github.ricciow.Pridge.mc
 import io.github.ricciow.util.PridgeLogger
 import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.DeltaTracker
 import com.mojang.blaze3d.platform.NativeImage
 import net.minecraft.client.renderer.texture.DynamicTexture
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.network.chat.ClickEvent.OpenUrl
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.network.chat.Style
+//? if < 1.21.11 {
+/*import net.minecraft.resources.ResourceLocation
+*///?} else {
+import net.minecraft.resources.Identifier
+import net.minecraft.client.gui.ActiveTextCollector
+//?}
 import org.apache.commons.io.IOUtils
 import org.lwjgl.glfw.GLFW
 import java.net.HttpURLConnection
@@ -38,8 +43,8 @@ class ImagePreviewRenderer {
 
         val mouseX = mc.mouseHandler.xpos() * mc.window.guiScaledWidth.toDouble() / mc.window.screenWidth
         val mouseY = mc.mouseHandler.ypos() * mc.window.guiScaledHeight.toDouble() / mc.window.screenHeight
-        val style = mc.gui.chat.getClickedComponentStyleAt(mouseX, mouseY)
 
+        val style = getStyleAtMouse(mouseX, mouseY)
         var url: String? = null
         if (style != null) {
             val clickEvent = style.getClickEvent()
@@ -53,6 +58,29 @@ class ImagePreviewRenderer {
         if (this.hasTexture) {
             renderPreview(drawContext)
         }
+    }
+
+    fun getStyleAtMouse(mouseX: Double, mouseY: Double): Style? {
+        //? if < 1.21.11 {
+        /*return mc.gui.chat.getClickedComponentStyleAt(mouseX, mouseY)
+        *///?} else {
+        val finder = ActiveTextCollector.ClickableStyleFinder(
+            mc.font,
+            mouseX.toInt(),
+            mouseY.toInt()
+        )
+
+        finder.includeInsertions(true)
+
+        mc.gui.chat.captureClickableText(
+            finder,
+            mc.window.guiScaledHeight,
+            mc.gui.guiTicks,
+            true
+        )
+
+        return finder.result()
+        //?}
     }
 
     private fun handleUrl(url: String?) {
@@ -205,6 +233,11 @@ class ImagePreviewRenderer {
         private val OGP_IMAGE_REGEX =
             Pattern.compile("<meta property=\"(?:og:image|twitter:image)\" content=\"(?<url>.+?)\".*?/?>")
         private val IMG_TAG_REGEX = Pattern.compile("<img.*?src=\"(?<url>.+?)\".*?>")
-        private val PREVIEW_TEXTURE_ID = ResourceLocation.fromNamespaceAndPath("image_preview", "preview_texture")
+        //? if < 1.21.11 {
+        /*private val PREVIEW_TEXTURE_ID = ResourceLocation.fromNamespaceAndPath("image_preview", "preview_texture")
+        *///?} else {
+        private val PREVIEW_TEXTURE_ID = Identifier.fromNamespaceAndPath("image_preview", "preview_texture")
+        //?}
+
     }
 }

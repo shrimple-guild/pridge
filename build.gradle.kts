@@ -1,5 +1,4 @@
 import net.fabricmc.loom.task.RemapJarTask
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     java
@@ -11,8 +10,13 @@ plugins {
 group = property("maven_group")!!
 version = property("mod_version")!!
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
-kotlin.compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
+val requiredJava = when {
+    stonecutter.eval(stonecutter.current.version, ">=1.20.6") -> JavaVersion.VERSION_21
+    stonecutter.eval(stonecutter.current.version, ">=1.18") -> JavaVersion.VERSION_17
+    stonecutter.eval(stonecutter.current.version, ">=1.17") -> JavaVersion.VERSION_16
+    else -> JavaVersion.VERSION_1_8
+}
+
 
 repositories {
     maven("https://maven.notenoughupdates.org/releases/") {
@@ -25,7 +29,17 @@ repositories {
 }
 
 loom {
-    accessWidenerPath.set(file("src/main/resources/pridge.accesswidener"))
+    fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json")
+    
+    val aw = file("src/main/resources/pridge.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
+    }
+
+    runConfigs.all {
+        ideConfigGenerated(true)
+        runDir = "../../run"
+    }
 }
 
 val shadowModImpl by configurations.creating {
@@ -33,7 +47,7 @@ val shadowModImpl by configurations.creating {
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:${property("minecraft_version")}")
+    minecraft("com.mojang:minecraft:${stonecutter.current.version}")
     mappings(loom.officialMojangMappings())
 
     modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
@@ -45,6 +59,22 @@ dependencies {
     shadowModImpl("org.notenoughupdates.moulconfig:${property("moulconfig_version")}")
 
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
+}
+
+java {
+    withSourcesJar()
+    targetCompatibility = requiredJava
+    sourceCompatibility = requiredJava
+}
+
+kotlin {
+    jvmToolchain(requiredJava.majorVersion.toInt())
+
+    sourceSets {
+        main {
+            kotlin.srcDir("build/generated/ksp/main/kotlin")
+        }
+    }
 }
 
 val remapJar by tasks.named<RemapJarTask>("remapJar") {

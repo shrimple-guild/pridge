@@ -15,4 +15,16 @@ pluginManagement {
         id("fabric-loom") version loom_version
         id("org.jetbrains.kotlin.jvm") version kotlin_version
     }
+
+}
+
+plugins {
+    id("dev.kikugie.stonecutter") version "0.7.11"
+}
+
+stonecutter {
+    create(rootProject) {
+        versions("1.21.10", "1.21.11")
+        vcsVersion = "1.21.10"
+    }
 }

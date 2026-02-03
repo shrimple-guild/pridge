@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "pridge",
+  "id": "${mod_id}",
   "name": "pridge",
   "version": "${version}",
   "description": "This is a formatted for the Shrimple/PrawnAcademy Guild Bridge bot",

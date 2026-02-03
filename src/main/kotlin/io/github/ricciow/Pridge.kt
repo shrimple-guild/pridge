@@ -20,7 +20,11 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
 import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.loader.api.metadata.ModMetadata
 import net.minecraft.client.Minecraft
-import net.minecraft.resources.ResourceLocation
+//? if < 1.21.11 {
+/*import net.minecraft.resources.ResourceLocation
+*///?} else {
+import net.minecraft.resources.Identifier
+//?}
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -54,7 +58,12 @@ object Pridge : ClientModInitializer {
             PridgeLogger.error("Failed to create sounds directory: ${e.message}", e)
         }
 
-        val imagePreviewLayer = ResourceLocation.fromNamespaceAndPath("image-preview-mod", "preview-layer")
+        //? if < 1.21.11 {
+        /*val imagePreviewLayer = ResourceLocation.fromNamespaceAndPath("image-preview-mod", "preview-layer")
+        *///?} else {
+        val imagePreviewLayer = Identifier.fromNamespaceAndPath("image-preview-mod", "preview-layer")
+        //?}
+
         val imagePreviewRenderer = ImagePreviewRenderer()
         HudElementRegistry.attachElementAfter(
             VanillaHudElements.CHAT,

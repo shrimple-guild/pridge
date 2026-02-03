@@ -3,7 +3,11 @@ package io.github.ricciow.mixin;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.client.sounds.WeighedSoundEvents;
-import net.minecraft.resources.ResourceLocation;
+//? if < 1.21.11 {
+/*import net.minecraft.resources.ResourceLocation;
+*///?} else {
+import net.minecraft.resources.Identifier;
+//?}
 import net.minecraft.util.valueproviders.ConstantFloat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,7 +22,11 @@ public class SoundManagerMixin {
     private static final String DYNAMIC_SOUND_NAMESPACE = "dynamicsound";
 
     @Inject(method = "getSoundEvent", at = @At("HEAD"), cancellable = true)
-    private void onGetSound(ResourceLocation id, CallbackInfoReturnable<WeighedSoundEvents> cir) {
+    //? if < 1.21.11 {
+    /*private void onGetSound(ResourceLocation id, CallbackInfoReturnable<WeighedSoundEvents> cir) {
+    *///?} else {
+    private void onGetSound(Identifier id, CallbackInfoReturnable<WeighedSoundEvents> cir) {
+    //?}
         if (!id.getNamespace().equals(DYNAMIC_SOUND_NAMESPACE)) return;
 
         WeighedSoundEvents soundSet = new WeighedSoundEvents(id, null);

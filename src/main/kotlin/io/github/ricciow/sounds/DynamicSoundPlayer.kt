@@ -8,7 +8,11 @@ import io.github.ricciow.util.PridgeLogger
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.sounds.SoundEvent
-import net.minecraft.resources.ResourceLocation
+//? if < 1.21.11 {
+/*import net.minecraft.resources.ResourceLocation
+*///?} else {
+import net.minecraft.resources.Identifier
+//?}
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -32,8 +36,14 @@ object DynamicSoundPlayer {
             return
         }
 
+        //? if < 1.21.11 {
+        /*val soundEvent = SoundEvent(ResourceLocation.fromNamespaceAndPath("dynamicsound", fileName), Optional.empty<Float>())
+        *///?} else {
+        val soundEvent = SoundEvent(Identifier.fromNamespaceAndPath("dynamicsound", fileName), Optional.empty<Float>())
+        //?}
+
         val soundInstance = SimpleSoundInstance.forUI(
-            SoundEvent(ResourceLocation.fromNamespaceAndPath("dynamicsound", fileName), Optional.empty<Float>()),
+            soundEvent,
             CONFIG_I.soundsCategory.getVolume(),
             1.0f
         )
