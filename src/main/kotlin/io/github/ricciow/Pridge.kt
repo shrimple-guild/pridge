@@ -15,9 +15,10 @@ import kotlinx.io.IOException
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
-import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback
-import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
 import net.fabricmc.loader.api.FabricLoader
+import net.fabricmc.loader.api.metadata.ModMetadata
 import net.minecraft.client.MinecraftClient
 import net.minecraft.util.Identifier
 import java.nio.file.Files
@@ -33,10 +34,11 @@ object Pridge : ClientModInitializer {
     lateinit var CONFIG: ManagedConfig<PridgeConfig>
     inline val CONFIG_I: PridgeConfig
         get() = CONFIG.instance // since instance is mutable, we cant just have it as a variable
+    lateinit var METADATA: ModMetadata
 
     override fun onInitializeClient() {
+        METADATA = FabricLoader.getInstance().getModContainer(MOD_ID).get().metadata
         initializeConfig()
-
         PridgeLogger.info("Initializing...")
 
         // Initialize object data
@@ -54,10 +56,11 @@ object Pridge : ClientModInitializer {
 
         val imagePreviewLayer = Identifier.of("image-preview-mod", "preview-layer")
         val imagePreviewRenderer = ImagePreviewRenderer()
-
-        HudLayerRegistrationCallback.EVENT.register { layeredDrawer ->
-            layeredDrawer.attachLayerAfter(IdentifiedLayer.CHAT, imagePreviewLayer, imagePreviewRenderer::onHudRender)
-        }
+        HudElementRegistry.attachElementAfter(
+            VanillaHudElements.CHAT,
+            imagePreviewLayer,
+            imagePreviewRenderer::onHudRender
+        )
 
         PridgeLogger.info("Initialized successfully!")
     }
@@ -87,5 +90,13 @@ object Pridge : ClientModInitializer {
                 )
             }
         }
+    }
+
+    fun getIssuesPage(): String {
+        return METADATA.contact.get("issues").get()
+    }
+
+    fun getRawRepo(): String {
+        return METADATA.contact.get("raw").get()
     }
 }

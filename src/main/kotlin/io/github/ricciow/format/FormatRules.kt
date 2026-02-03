@@ -4,7 +4,7 @@ import io.github.ricciow.util.PridgeLogger
 import java.util.regex.Pattern
 
 abstract class FormatRule {
-    abstract fun process(text: String): FormatResult?
+    abstract fun process(text: String, officer: Boolean): FormatResult?
     abstract fun initialize()
 }
 
@@ -24,7 +24,7 @@ class RegexFormatRule : FormatRule() {
         return trigger
     }
 
-    override fun process(text: String): FormatResult? {
+    override fun process(text: String, officer: Boolean): FormatResult? {
         val pattern = this.pattern ?: run {
             PridgeLogger.warn("Pattern for $trigger is null")
             return null
@@ -35,7 +35,7 @@ class RegexFormatRule : FormatRule() {
         if (!matcher.matches()) return null
 
         if (groupFormatting.isEmpty()) {
-            return FormatResult(matcher.replaceAll(finalFormat), botText = true)
+            return FormatResult(matcher.replaceAll(finalFormat), botText = true, officer = officer)
         }
 
         var result = finalFormat
@@ -71,9 +71,9 @@ class StringFormatRule : FormatRule() {
         return trigger
     }
 
-    override fun process(text: String): FormatResult? {
+    override fun process(text: String, officer: Boolean): FormatResult? {
         if (trigger == text) {
-            return FormatResult(finalFormat, botText = true)
+            return FormatResult(finalFormat, botText = true, officer = officer)
         }
         return null
     }
@@ -90,9 +90,9 @@ class StringArrayFormatRule : FormatRule() {
         return trigger.toString()
     }
 
-    override fun process(text: String): FormatResult? {
+    override fun process(text: String, officer: Boolean): FormatResult? {
         if (trigger.contains(text)) {
-            return FormatResult(finalFormat.replace($$"${msg}", text), botText = true)
+            return FormatResult(finalFormat.replace($$"${msg}", text), botText = true, officer = officer)
         }
         return null
     }
@@ -116,7 +116,7 @@ internal class SpecialFormatRule : FormatRule() {
         return trigger
     }
 
-    override fun process(text: String): FormatResult? {
+    override fun process(text: String, officer: Boolean): FormatResult? {
         if (pattern == null || functionName == null) {
             return null
         }
@@ -124,7 +124,7 @@ internal class SpecialFormatRule : FormatRule() {
         val matcher = pattern!!.matcher(text)
 
         if (matcher.matches()) {
-            return SpecialFunctions.run(this.functionName!!, text, matcher)
+            return SpecialFunctions.run(this.functionName!!, text, matcher, officer)
         }
 
         return null

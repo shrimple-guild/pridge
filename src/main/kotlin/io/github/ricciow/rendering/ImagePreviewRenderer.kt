@@ -2,6 +2,7 @@ package io.github.ricciow.rendering
 
 import io.github.ricciow.Pridge.mc
 import io.github.ricciow.util.PridgeLogger
+import net.minecraft.client.gl.RenderPipelines
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.RenderTickCounter
@@ -167,7 +168,7 @@ class ImagePreviewRenderer {
         val aspectRatio = imageWidth.toFloat() / imageHeight
         var desiredWidth = screenWidth * 0.5f
 
-        val handle = mc.window.handle
+        val handle = mc.window
         if (InputUtil.isKeyPressed(handle, GLFW.GLFW_KEY_LEFT_SHIFT) &&
             InputUtil.isKeyPressed(handle, GLFW.GLFW_KEY_LEFT_CONTROL)
         ) {
@@ -191,7 +192,7 @@ class ImagePreviewRenderer {
         val intWidth = finalWidth.toInt()
         val intHeight = finalHeight.toInt()
         drawContext.drawTexture(
-            RenderLayer::getGuiTextured,
+            RenderPipelines.GUI_TEXTURED,
             PREVIEW_TEXTURE_ID,
             0, 0,
             0.0f, 0.0f,

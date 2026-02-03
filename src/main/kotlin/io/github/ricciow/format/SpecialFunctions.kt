@@ -1,5 +1,6 @@
 package io.github.ricciow.format
 
+import io.github.ricciow.Pridge
 import io.github.ricciow.Pridge.CONFIG_I
 import io.github.ricciow.util.ColorCode
 import io.github.ricciow.util.PridgeLogger
@@ -20,7 +21,7 @@ import java.util.regex.Pattern
 object SpecialFunctions {
     private val registry = mutableMapOf<String, SpecialFunction>()
 
-    private val LINK_PATTERN = Pattern.compile("\\[LINK]\\((l\\$[^)]+)\\)")
+    private val LINK_PATTERN = Pattern.compile("""\[LINK]\(([^)]*)\)""")
 
     fun initialize() {
         registry.put("discord", SpecialFunctions::discordHandler)
@@ -48,9 +49,9 @@ object SpecialFunctions {
      * @param matcher RegExp matcher to be passed through the function
      * @return String containing the result of the function or null if there isn't a function
      */
-    fun run(functionName: String, originalText: String, matcher: Matcher): FormatResult? {
+    fun run(functionName: String, originalText: String, matcher: Matcher, officer: Boolean): FormatResult? {
         val function = get(functionName) ?: return null
-        return function.run(originalText, matcher)
+        return function.run(originalText, matcher, officer)
     }
 
     //<editor-fold desc="Helper Methods">
@@ -89,7 +90,7 @@ object SpecialFunctions {
             } catch (e: Exception) {
                 PridgeLogger.error("Failed to decode URL: $group", e)
                 representation = "&a&l[Failed to decode URL]"
-                "https://github.com/Ricciow/Pridge-1.21.5/issues"
+                Pridge.getIssuesPage()
             }
             return parse(representation).apply {
                 style = Style.EMPTY
@@ -101,7 +102,7 @@ object SpecialFunctions {
         return parse(originalText)
     }
 
-    private fun contest1Handler(originalText: String, matcher: Matcher): FormatResult {
+    private fun contest1Handler(originalText: String, matcher: Matcher, officer: Boolean): FormatResult {
         val crop = matcher.group(1)
         val hours = matcher.group(2).toInt()
         val minutes = matcher.group(3).toInt()
@@ -111,10 +112,10 @@ object SpecialFunctions {
         val minutesStr = timeFunc(minutes, "m")
         val secondsStr = timeFunc(seconds, "s")
 
-        return FormatResult("&eNext $crop contest in&f$hoursStr$minutesStr$secondsStr", botText = true)
+        return FormatResult("&eNext $crop contest in&f$hoursStr$minutesStr$secondsStr", botText = true, officer = officer)
     }
 
-    private fun contest2Handler(originalText: String, matcher: Matcher): FormatResult {
+    private fun contest2Handler(originalText: String, matcher: Matcher, officer: Boolean): FormatResult {
         val crop1 = matcher.group(1)
         val crop2 = matcher.group(2)
         val crop3 = matcher.group(3)
@@ -130,11 +131,11 @@ object SpecialFunctions {
 
         return FormatResult(
             "\n &a&lActive Contest\n &6$crop1, $crop2, $crop3\n&eNext $nextCrop contest in&f$hoursStr$minutesStr$secondsStr",
-            botText = true
+            botText = true, officer = officer
         )
     }
 
-    private fun contest3Handler(originalText: String, matcher: Matcher): FormatResult {
+    private fun contest3Handler(originalText: String, matcher: Matcher, officer: Boolean): FormatResult {
         val crop1 = matcher.group(1)
         val crop2 = matcher.group(2)
         val crop3 = matcher.group(3)
@@ -152,11 +153,11 @@ object SpecialFunctions {
 
         return FormatResult(
             " &a&lActive Contest\n &6$crop1, $crop2, $crop3\n&eNext: \n &6$crop4, $crop5, $crop6\n &eIn&f$hoursStr$minutesStr$secondsStr",
-            botText = true
+            botText = true, officer = officer
         )
     }
 
-    private fun contest4Handler(originalText: String, matcher: Matcher): FormatResult {
+    private fun contest4Handler(originalText: String, matcher: Matcher, officer: Boolean): FormatResult {
         val crop1 = matcher.group(1)
         val crop2 = matcher.group(2)
         val crop3 = matcher.group(3)
@@ -170,11 +171,11 @@ object SpecialFunctions {
 
         return FormatResult(
             " &e&lNext:\n &6$crop1, $crop2, $crop3\n &eIn&f$hoursStr$minutesStr$secondsStr",
-            botText = true
+            botText = true, officer = officer
         )
     }
 
-    private fun bestiaryHandler(originalText: String, matcher: Matcher): FormatResult {
+    private fun bestiaryHandler(originalText: String, matcher: Matcher, officer: Boolean): FormatResult {
         val maxPerPage = CONFIG_I.botCategory.getLineCount()
 
         val bestiary = matcher.group(1)
@@ -243,11 +244,12 @@ object SpecialFunctions {
 
         return FormatResult(
             pages, titles, TextColor.fromFormatting(Formatting.DARK_AQUA)!!,
-            TextColor.fromFormatting(Formatting.GRAY)!!, prefix, botText = true
+            TextColor.fromFormatting(Formatting.GRAY)!!, prefix, botText = true,
+            officer = officer
         )
     }
 
-    private fun bestiary2Handler(originalText: String, matcher: Matcher): FormatResult {
+    private fun bestiary2Handler(originalText: String, matcher: Matcher, officer: Boolean): FormatResult {
         val mob = matcher.group(1)
         val user = matcher.group(2)
         val profile = matcher.group(3)
@@ -257,11 +259,11 @@ object SpecialFunctions {
 
         return FormatResult(
             "&f&l$user (&f&l$profile)&6&l:\n &6&l$mob - &f&l$num&e&l/&f&l0 &e&l($str&e&l)",
-            botText = true
+            botText = true, officer = officer
         )
     }
 
-    private fun collectionHandler(originalText: String, matcher: Matcher): FormatResult {
+    private fun collectionHandler(originalText: String, matcher: Matcher, officer: Boolean): FormatResult {
         val maxPerPage = CONFIG_I.botCategory.getLineCount()
 
         val skill = matcher.group(1)
@@ -336,11 +338,12 @@ object SpecialFunctions {
         // The return statement is the same.
         return FormatResult(
             pages, titles, TextColor.fromFormatting(Formatting.DARK_AQUA)!!,
-            TextColor.fromFormatting(Formatting.GRAY)!!, prefix, botText = true
+            TextColor.fromFormatting(Formatting.GRAY)!!, prefix, botText = true,
+            officer = officer
         )
     }
 
-    private fun discordHandler(originalText: String, matcher: Matcher): FormatResult {
+    private fun discordHandler(originalText: String, matcher: Matcher, officer: Boolean): FormatResult {
         val user = matcher.group(1)
         var message = matcher.group(2)
         val userName: String?
@@ -389,10 +392,10 @@ object SpecialFunctions {
             finalMessage.append(formattedPart)
         }
 
-        return FormatResult(finalMessage, discordText = true)
+        return FormatResult(finalMessage, discordText = true, officer = officer)
     }
 
     fun interface SpecialFunction {
-        fun run(originalText: String, matcher: Matcher): FormatResult
+        fun run(originalText: String, matcher: Matcher, officer: Boolean): FormatResult
     }
 }

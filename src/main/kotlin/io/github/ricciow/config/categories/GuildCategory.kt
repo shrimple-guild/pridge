@@ -32,4 +32,10 @@ class GuildCategory {
     @ConfigEditorText
     @JvmField
     var name = "&2Pridge >"
+
+    @Expose
+    @ConfigOption(name = "Officer prefix new name", desc = "What Officer > will be modified to")
+    @ConfigEditorText
+    @JvmField
+    var officerName = "&3Officer >"
 }

@@ -11,19 +11,22 @@ class FormatResult {
     private var finalText: Text? = null
     var discordText: Boolean
     var botText: Boolean
+    var officer: Boolean
 
     private var disableOutput = false
 
-    constructor(finalText: Text, discordText: Boolean = false, botText: Boolean = false) {
+    constructor(finalText: Text, discordText: Boolean = false, botText: Boolean = false, officer: Boolean = false) {
         this.finalText = finalText
         this.discordText = discordText
         this.botText = botText
+        this.officer = officer
     }
 
-    constructor(finalText: String, discordText: Boolean = false, botText: Boolean = false) : this(
+    constructor(finalText: String, discordText: Boolean = false, botText: Boolean = false, officer: Boolean = false) : this(
         parse(finalText),
         discordText,
-        botText
+        botText,
+        officer
     )
 
     /**
@@ -41,10 +44,12 @@ class FormatResult {
         disabledArrowColor: TextColor,
         prefix: Text?,
         discordText: Boolean = false,
-        botText: Boolean = false
+        botText: Boolean = false,
+        officer: Boolean = false
     ) {
         this.discordText = discordText
         this.botText = botText
+        this.officer = officer
 
         val finalPrefix = getPrefix()
         if (prefix != null) {
@@ -66,10 +71,12 @@ class FormatResult {
         disabledArrowColor: TextColor,
         prefix: Text?,
         discordText: Boolean = false,
-        botText: Boolean = false
+        botText: Boolean = false,
+        officer: Boolean = false
     ) {
         this.discordText = discordText
         this.botText = botText
+        this.officer = officer
 
         val finalPrefix = getPrefix()
         if (prefix != null) {
@@ -83,7 +90,11 @@ class FormatResult {
 
 
     fun getPrefix(): MutableText {
-        val prefix = StringBuilder(CONFIG_I.guildCategory.name)
+        val prefix = StringBuilder(if (this.officer) {
+            CONFIG_I.guildCategory.officerName
+        } else {
+            CONFIG_I.guildCategory.name
+        })
 
         if (botText) {
             prefix.append(" ").append(CONFIG_I.botCategory.name)

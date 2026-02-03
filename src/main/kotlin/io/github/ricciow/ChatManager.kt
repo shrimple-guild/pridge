@@ -79,6 +79,7 @@ data class BoopBooResult(
 
 object ChatManager {
     private val GUILD_CHAT_PATTERN: Pattern = Pattern.compile("^Guild > (.*?): (.*)$")
+    private val OFFICER_CHAT_PATTERN: Pattern = Pattern.compile("^Officer > (.*?): (.*)$")
     private val STATUS_CHAT_PATTERN: Pattern = Pattern.compile("^Guild > (.*?) (joined|left)\\.$")
     private val PRIVATE_CHAT_PATTERN: Pattern = Pattern.compile("^From (.*?): (.*)$")
 
@@ -128,7 +129,13 @@ object ChatManager {
             //Guild Chat Message handling
             val guildMatcher = GUILD_CHAT_PATTERN.matcher(cleanRawMessage)
             if (guildMatcher.matches()) {
-                return onReceiveGuildMessage(message, guildMatcher)
+                return onReceiveGuildMessage(message, guildMatcher, false)
+            }
+
+            //Officer Chat Message handling
+            val officerMatcher = OFFICER_CHAT_PATTERN.matcher(cleanRawMessage)
+            if (officerMatcher.matches()) {
+                return onReceiveGuildMessage(message, officerMatcher, true)
             }
 
             //Join/Leave handling
@@ -148,7 +155,7 @@ object ChatManager {
         return true
     }
 
-    private fun onReceiveGuildMessage(originalMessage: Text, guildMatcher: Matcher): Boolean {
+    private fun onReceiveGuildMessage(originalMessage: Text, guildMatcher: Matcher, officer: Boolean): Boolean {
         val userInfo = guildMatcher.group(1).trim()
         var chatContent = guildMatcher.group(2).trim()
 
@@ -156,16 +163,16 @@ object ChatManager {
 
         val userOptional = userInfo.split(" ").firstOrNull { part ->
             !part.startsWith("[") && !part.endsWith("]")
-        } ?: return true;
+        } ?: return true
 
         // Only proceed if we successfully found a username.
         if (userOptional.equals(CONFIG_I.botCategory.ign, ignoreCase = true)) {
-            return onReceiveBotMessage(chatContent)
+            return onReceiveBotMessage(chatContent, officer)
         }
-        return onReceivePlayerMessage(originalMessage)
+        return onReceivePlayerMessage(originalMessage, officer)
     }
 
-    private fun onReceiveBotMessage(chatContent: String): Boolean {
+    private fun onReceiveBotMessage(chatContent: String, officer: Boolean): Boolean {
         if (handlePartial(chatContent)) {
             PridgeLogger.dev("Partial message was handled: $chatContent")
         }
@@ -181,7 +188,7 @@ object ChatManager {
             finalContent = chatContent
         }
 
-        val formattedContent = FormatManager.formatText(finalContent)
+        val formattedContent = FormatManager.formatText(finalContent, officer)
         PridgeLogger.dev("Message was formatted to: $formattedContent")
         ChatUtils.sendMessage(formattedContent.getText())
         return false
@@ -197,9 +204,14 @@ object ChatManager {
         }
     }
 
-    private fun onReceivePlayerMessage(originalMessage: Text): Boolean {
+    private fun onReceivePlayerMessage(originalMessage: Text, officer: Boolean): Boolean {
         if (!CONFIG_I.guildCategory.modifyNormalGuildMessages) return true
-        ChatUtils.sendMessage(parse(originalMessage.string.replace("§2Guild >", CONFIG_I.guildCategory.name)))
+        val message = if (officer) {
+            originalMessage.string.replace("§3Officer >", CONFIG_I.guildCategory.officerName)
+        } else {
+            originalMessage.string.replace("§2Guild >", CONFIG_I.guildCategory.name)
+        }
+        ChatUtils.sendMessage(parse(message))
         return false
     }
 

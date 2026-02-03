@@ -21,8 +21,8 @@ fun ClientPlayerEntity?.chatHypixel(type: ChatType, message: String?) {
     }
 }
 
-fun ClientPlayerEntity?.sendCommand(command: String): Boolean {
-    return this?.networkHandler?.sendCommand(command.substring(1)) ?: false
+fun ClientPlayerEntity?.sendCommand(command: String) {
+    this?.networkHandler?.sendChatCommand(command.substring(1))
 }
 
 fun ClientPlayerEntity?.sendMessage(message: String) {

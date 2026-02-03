@@ -12,7 +12,8 @@
   "contact": {
     "sources": "https://github.com/Ricciow/Pridge-1.21.5",
     "homepage": "https://discord.gg/shrimple",
-    "issues": "https://github.com/Ricciow/Pridge-1.21.5/issues"
+    "issues": "https://github.com/Ricciow/Pridge-1.21.5/issues",
+    "raw": "https://raw.githubusercontent.com/Ricciow/Pridge-1.21.5/"
   },
   "icon": "assets/pridge/icon.png",
   "license": "MIT",
@@ -30,9 +31,9 @@
   ],
   "accessWidener": "pridge.accesswidener",
   "depends": {
-    "fabricloader": ">=0.16.14",
-    "minecraft": "~1.21.5",
-    "fabric-api": ">=0.128.1+1.21.5",
-    "fabric-language-kotlin": ">=1.13.4+kotlin.2.2.0"
+    "fabricloader": ">=0.18.4",
+    "minecraft": "~1.21.10",
+    "fabric-api": ">=0.134.1+1.21.10",
+    "fabric-language-kotlin": ">=1.13.8+kotlin.2.3.0"
   }
 }

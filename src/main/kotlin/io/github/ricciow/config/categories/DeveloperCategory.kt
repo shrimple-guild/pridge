@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
+import io.github.ricciow.Pridge
 
 class DeveloperCategory {
     @Expose
@@ -28,5 +29,5 @@ class DeveloperCategory {
     @ConfigOption(name="Formattings URL", desc="Where the formattings will be pulled from")
     @ConfigEditorText
     @JvmField
-    var formatURL = "https://raw.githubusercontent.com/Ricciow/Pridge-1.21.5/master/src/main/resources/assets/pridge/formats_default.json"
+    var formatURL = Pridge.getRawRepo() + "/master/src/main/resources/assets/pridge/formats_default.json"
 }

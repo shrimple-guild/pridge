@@ -166,9 +166,9 @@ object FormatManager {
      * @param inputText The text to be formatted.
      * @return The formatted text, or the original text if no rule matched.
      */
-    fun formatText(inputText: String): FormatResult {
+    fun formatText(inputText: String, officer: Boolean): FormatResult {
         for (rule in config!!.formats) {
-            val result = rule.process(inputText)
+            val result = rule.process(inputText, officer)
             if (result != null) {
                 PridgeLogger.dev("Ran the format rule: $rule")
                 return result
@@ -178,6 +178,6 @@ object FormatManager {
         // If we get here, it means the loop finished and no rule returned a non-null result.
         // In this case, we return the original text as the fallback.
         PridgeLogger.warn("No rule found to format message: $inputText")
-        return FormatResult(inputText)
+        return FormatResult(inputText, officer = officer)
     }
 }
