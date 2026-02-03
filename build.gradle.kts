@@ -102,10 +102,17 @@ tasks.jar {
 tasks.assemble.get().dependsOn(tasks.remapJar)
 
 tasks.processResources {
+    val mcVersion = stonecutter.current.version
+
+    inputs.property("minecraft", mcVersion)
     inputs.property("version", project.version)
 
     filesMatching("fabric.mod.json") {
-        expand(getProperties())
-        expand(mutableMapOf("version" to project.version))
+        val expansionProps = project.properties + mapOf(
+            "minecraft" to mcVersion,
+            "version" to project.version
+        )
+
+        expand(expansionProps)
     }
 }
