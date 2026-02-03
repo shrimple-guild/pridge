@@ -10,10 +10,10 @@
     "appable"
   ],
   "contact": {
-    "sources": "https://github.com/Ricciow/Pridge-1.21.5",
+    "sources": "https://github.com/shrimple-guild/pridge",
     "homepage": "https://discord.gg/shrimple",
-    "issues": "https://github.com/Ricciow/Pridge-1.21.5/issues",
-    "raw": "https://raw.githubusercontent.com/Ricciow/Pridge-1.21.5/"
+    "issues": "https://github.com/shrimple-guild/pridge/issues",
+    "raw": "https://raw.githubusercontent.com/shrimple-guild/pridge"
   },
   "icon": "assets/pridge/icon.png",
   "license": "MIT",
