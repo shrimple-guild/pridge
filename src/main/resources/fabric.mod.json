@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "${mod_id}",
-  "name": "pridge",
+  "name": "Pridge",
   "version": "${version}",
-  "description": "This is a formatted for the Shrimple/PrawnAcademy Guild Bridge bot",
+  "description": "This is a formatter for the Shrimple/Prawn Academy Guild Bridge bot",
   "authors": [
     "Riccio",
     "Ilmars112",
@@ -33,7 +33,14 @@
   "depends": {
     "fabricloader": ">=0.18.4",
     "minecraft": "~1.21.10",
-    "fabric-api": ">=0.134.1+1.21.10",
+    "fabric-api": ">=${fapi_version}",
     "fabric-language-kotlin": ">=1.13.8+kotlin.2.3.0"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "Discord": "https://discord.gg/shrimple"
+      }
+    }
   }
 }
