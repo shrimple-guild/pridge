@@ -38,20 +38,7 @@ dependencies {
 
     modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
 
-    // Extra fabric api modules
-    val apiModules = setOf(
-        "fabric-resource-loader-v0",
-        "fabric-lifecycle-events-v1",
-        "fabric-events-interaction-v0",
-        "fabric-command-api-v2",
-        "fabric-registry-sync-v0",
-        "fabric-rendering-v1",
-        "fabric-message-api-v1"
-    )
-
-    apiModules.forEach {
-        modImplementation(fabricApi.module(it, property("fapi_version").toString()))
-    }
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fapi_version")}")
 
     modImplementation("net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
 
