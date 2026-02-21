@@ -220,14 +220,11 @@ object ChatManager {
             val guildTag =
                 if (CONFIG_I.guildCategory.modifyNormalGuildMessages) CONFIG_I.guildCategory.name else "&2Guild >"
             val colorCode = if (matcher.group(2) == "left") ColorCode.RED else ColorCode.GREEN
+
             ChatUtils.sendMessage(
-                parse(
-                    "$guildTag ${ColorCode.GOLD.getMcCode()}${originalMessage.string.split(" ")[2]} ${colorCode.getMcCode()}${
-                        matcher.group(
-                            2
-                        )
-                    }"
-                )
+                parse("$guildTag ")
+                    .append(originalMessage.siblings[0])
+                    .append(parse("${colorCode.getMcCode()}${matcher.group(2)}"))
             )
             return false
         }
