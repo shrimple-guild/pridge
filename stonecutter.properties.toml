@@ -1,0 +1,24 @@
+# Mod Properties
+mod_version = "1.1.6"
+mod_id = "pridge"
+maven_group = "io.github.ricciow"
+archives_base_name = "pridge"
+
+# Fabric Properties
+loader_version = "0.18.4"
+fabric_kotlin_version = "1.13.10+kotlin.2.3.20"
+
+# Dependencies
+devauth_version = "1.2.2"
+
+["1.21.10"]
+fapi_version = "0.134.1+1.21.10"
+moulconfig_version = "modern-1.21.10:4.3.0-beta"
+
+["1.21.11"]
+fapi_version = "0.141.1+1.21.11"
+moulconfig_version = "modern-1.21.11:4.3.0-beta"
+
+["26.1"]
+fapi_version = "0.144.4+26.1"
+moulconfig_version = "modern-26.1:4.6.0"

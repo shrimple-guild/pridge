@@ -5,6 +5,9 @@ pluginManagement {
         maven("https://maven.fabricmc.net/") {
             name = "Fabric"
         }
+        maven("https://maven.kikugie.dev/snapshots") {
+            name = "KikuGie Snapshots"
+        }
         gradlePluginPortal()
     }
 
@@ -13,18 +16,19 @@ pluginManagement {
 
     plugins {
         id("fabric-loom") version loom_version
+        id("net.fabricmc.fabric-loom") version loom_version
         id("org.jetbrains.kotlin.jvm") version kotlin_version
     }
 
 }
 
 plugins {
-    id("dev.kikugie.stonecutter") version "0.7.11"
+    id("dev.kikugie.stonecutter") version "0.9"
 }
 
 stonecutter {
     create(rootProject) {
-        versions("1.21.10", "1.21.11")
+        versions("1.21.10", "1.21.11", "26.1")
         vcsVersion = "1.21.10"
     }
 }

@@ -3,8 +3,19 @@ import net.fabricmc.loom.task.RemapJarTask
 plugins {
     java
     kotlin("jvm")
-    id("fabric-loom")
+    id("fabric-loom") apply false
+    id("net.fabricmc.fabric-loom") apply false
     id("com.gradleup.shadow") version "9.3.1"
+}
+
+if (stonecutter.eval(stonecutter.current.version, ">=26.1")) {
+    apply(plugin = "net.fabricmc.fabric-loom")
+} else {
+    apply(plugin = "fabric-loom")
+}
+
+stonecutter {
+    properties.tags(current.version)
 }
 
 group = property("maven_group")!!
@@ -13,6 +24,7 @@ version = "${property("mod_version")}+${stonecutter.current.version}"
 base.archivesName = property("mod_id") as String
 
 val requiredJava = when {
+    stonecutter.eval(stonecutter.current.version, ">=26.1") -> JavaVersion.VERSION_25
     stonecutter.eval(stonecutter.current.version, ">=1.20.6") -> JavaVersion.VERSION_21
     stonecutter.eval(stonecutter.current.version, ">=1.18") -> JavaVersion.VERSION_17
     stonecutter.eval(stonecutter.current.version, ">=1.17") -> JavaVersion.VERSION_16
@@ -30,10 +42,10 @@ repositories {
     }
 }
 
-loom {
-    fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json")
+configure<net.fabricmc.loom.api.LoomGradleExtensionAPI> {
+    fabricModJsonPath.set(rootProject.file("src/main/resources/fabric.mod.json"))
     
-    val aw = file("src/main/resources/pridge.accesswidener")
+    val aw = rootProject.file("src/main/resources/pridge.accesswidener")
     if (aw.exists()) {
         accessWidenerPath.set(aw)
     }
@@ -44,23 +56,34 @@ loom {
     }
 }
 
+val isModern = stonecutter.eval(stonecutter.current.version, ">=26.1")
+val modImpl = if (isModern) "implementation" else "modImplementation"
+
 val shadowModImpl by configurations.creating {
-    configurations.modImplementation.get().extendsFrom(this)
+    configurations.named(modImpl).get().extendsFrom(this)
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:${stonecutter.current.version}")
-    mappings(loom.officialMojangMappings())
+    add("minecraft", "com.mojang:minecraft:${stonecutter.current.version}")
+    
+    if (stonecutter.eval(stonecutter.current.version, "<26.1")) {
+        val loomExt = project.extensions.getByType<net.fabricmc.loom.api.LoomGradleExtensionAPI>()
+        add("mappings", loomExt.officialMojangMappings())
+    }
 
-    modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
+    val isModern = stonecutter.eval(stonecutter.current.version, ">=26.1")
+    val modImpl = if (isModern) "implementation" else "modImplementation"
+    val modRuntime = if (isModern) "runtimeOnly" else "modRuntimeOnly"
 
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fapi_version")}")
+    add(modImpl, "net.fabricmc:fabric-loader:${property("loader_version")}")
 
-    modImplementation("net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
+    add(modImpl, "net.fabricmc.fabric-api:fabric-api:${property("fapi_version")}")
+
+    add(modImpl, "net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
 
     shadowModImpl("org.notenoughupdates.moulconfig:${property("moulconfig_version")}")
 
-    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
+    add(modRuntime, "me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
 }
 
 java {
@@ -79,16 +102,27 @@ kotlin {
     }
 }
 
-val remapJar by tasks.named<RemapJarTask>("remapJar") {
-    archiveClassifier.set("")
-    dependsOn(tasks.shadowJar)
-    inputFile.set(tasks.shadowJar.get().archiveFile)
-    destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
+if (stonecutter.eval(stonecutter.current.version, "<26.1")) {
+    val remapJar by tasks.named<RemapJarTask>("remapJar") {
+        archiveClassifier.set("")
+        dependsOn(tasks.shadowJar)
+        inputFile.set(tasks.shadowJar.get().archiveFile)
+        destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
+    }
+    tasks.assemble.get().dependsOn(remapJar)
+} else {
+    tasks.shadowJar {
+        archiveClassifier.set("")
+        destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
+    }
+    tasks.assemble.get().dependsOn(tasks.shadowJar)
 }
 
 tasks.shadowJar {
-    destinationDirectory.set(layout.buildDirectory.dir("libs/badjars"))
-    archiveClassifier.set("all-dev")
+    if (stonecutter.eval(stonecutter.current.version, "<26.1")) {
+        destinationDirectory.set(layout.buildDirectory.dir("libs/badjars"))
+        archiveClassifier.set("all-dev")
+    }
     configurations = listOf(shadowModImpl)
     relocate("io.github.notenoughupdates.moulconfig", "io.github.ricciow.moulconfig")
     mergeServiceFiles()
@@ -98,8 +132,6 @@ tasks.jar {
     archiveClassifier.set("nodeps")
     destinationDirectory.set(layout.buildDirectory.dir("libs/badjars"))
 }
-
-tasks.assemble.get().dependsOn(tasks.remapJar)
 
 tasks.processResources {
     val mcVersion = stonecutter.current.version
