@@ -45,9 +45,14 @@ repositories {
 configure<net.fabricmc.loom.api.LoomGradleExtensionAPI> {
     fabricModJsonPath.set(rootProject.file("src/main/resources/fabric.mod.json"))
     
-    val aw = rootProject.file("src/main/resources/pridge.accesswidener")
+    val aw = project.file("src/main/resources/pridge.accesswidener")
     if (aw.exists()) {
         accessWidenerPath.set(aw)
+    } else {
+        val rootAw = rootProject.file("src/main/resources/pridge.accesswidener")
+        if (rootAw.exists()) {
+            accessWidenerPath.set(rootAw)
+        }
     }
 
     runConfigs.all {

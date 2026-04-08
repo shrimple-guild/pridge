@@ -5,7 +5,11 @@ import io.github.ricciow.util.ChatUtils;
 import io.github.ricciow.util.message.IChatHudLineKt;
 import io.github.ricciow.util.message.IdentifiableChatHud;
 import net.minecraft.client.gui.components.ChatComponent;
-import net.minecraft.client.GuiMessage;
+//? if < 26.1 {
+/*import net.minecraft.client.GuiMessage;
+*///?} else {
+import net.minecraft.client.multiplayer.chat.GuiMessage;
+//?}
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,7 +18,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ChatComponent.class)
 public abstract class ChatComponentMixin implements IdentifiableChatHud {
     @Inject(
-            method = "addMessageToQueue(Lnet/minecraft/client/GuiMessage;)V",
+            //? if < 26.1 {
+            /*method = "addMessageToQueue(Lnet/minecraft/client/GuiMessage;)V",
+            *///?} else {
+            method = "addMessageToQueue(Lnet/minecraft/client/multiplayer/chat/GuiMessage;)V",
+            //?}
             at = @At("HEAD")
     )
     private void onAddNewChatHudLine(GuiMessage line, CallbackInfo ci) {
@@ -27,7 +35,11 @@ public abstract class ChatComponentMixin implements IdentifiableChatHud {
     }
 
     @Inject(
-            method = "addMessageToQueue(Lnet/minecraft/client/GuiMessage;)V",
+            //? if < 26.1 {
+            /*method = "addMessageToQueue(Lnet/minecraft/client/GuiMessage;)V",
+            *///?} else {
+            method = "addMessageToQueue(Lnet/minecraft/client/multiplayer/chat/GuiMessage;)V",
+            //?}
             at = @At("TAIL")
     )
     private void onTail(GuiMessage msg, CallbackInfo ci) {
@@ -38,7 +50,11 @@ public abstract class ChatComponentMixin implements IdentifiableChatHud {
             method = "refreshTrimmedMessages",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/components/ChatComponent;addMessageToDisplayQueue(Lnet/minecraft/client/GuiMessage;)V"
+                    //? if < 26.1 {
+                    /*target = "Lnet/minecraft/client/gui/components/ChatComponent;addMessageToDisplayQueue(Lnet/minecraft/client/GuiMessage;)V"
+                    *///?} else {
+                    target = "Lnet/minecraft/client/gui/components/ChatComponent;addMessageToDisplayQueue(Lnet/minecraft/client/multiplayer/chat/GuiMessage;)V"
+                    //?}
             )
     )
     private void onRefresh(CallbackInfo ci, @Local GuiMessage line) {

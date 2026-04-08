@@ -3,8 +3,14 @@ package io.github.ricciow.util
 import io.github.ricciow.Pridge.CONFIG_I
 import io.github.ricciow.Pridge.mc
 import io.github.ricciow.util.message.pridgeId
-import net.minecraft.client.GuiMessage
+//? if < 26.1 {
+/*import net.minecraft.client.GuiMessage
 import net.minecraft.client.GuiMessageTag
+*///?} else {
+import net.minecraft.client.multiplayer.chat.GuiMessage
+import net.minecraft.client.multiplayer.chat.GuiMessageTag
+import net.minecraft.client.multiplayer.chat.GuiMessageSource
+//?}
 import net.minecraft.network.chat.Component
 
 object ChatUtils {
@@ -33,7 +39,11 @@ object ChatUtils {
                 }
             }
             nextMessageId = id
-            mc.gui.chat.addMessage(fullText)
+            //? if < 26.1 {
+            /*mc.gui.chat.addMessage(fullText)
+            *///?} else {
+            mc.gui.chat.addMessage(fullText, null, GuiMessageSource.SYSTEM_CLIENT, null)
+            //?}
         }
     }
 
@@ -45,7 +55,8 @@ object ChatUtils {
             val currentLine = messages[i]
             val lineId = currentLine.pridgeId
             if (lineId > 0 && id == lineId) {
-                messages[i] = GuiMessage(
+                //? if < 26.1 {
+                /*messages[i] = GuiMessage(
                     currentLine.addedTime(),
                     text,
                     null,
@@ -53,6 +64,17 @@ object ChatUtils {
                 ).apply {
                     pridgeId = id
                 }
+                *///?} else {
+                messages[i] = GuiMessage(
+                    currentLine.addedTime(),
+                    text,
+                    null,
+                    GuiMessageSource.SYSTEM_CLIENT,
+                    if (mc.isSingleplayer) GuiMessageTag.systemSinglePlayer() else GuiMessageTag.system()
+                ).apply {
+                    pridgeId = id
+                }
+                //?}
                 replaced = true
             }
         }

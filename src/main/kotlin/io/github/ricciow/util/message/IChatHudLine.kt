@@ -1,6 +1,10 @@
 package io.github.ricciow.util.message
 
-import net.minecraft.client.GuiMessage
+//? if < 26.1 {
+/*import net.minecraft.client.GuiMessage
+*///?} else {
+import net.minecraft.client.multiplayer.chat.GuiMessage
+//?}
 
 interface IChatHudLine {
     fun `pridge$getIdentifier`(): Int

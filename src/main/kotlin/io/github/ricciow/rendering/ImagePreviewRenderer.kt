@@ -3,13 +3,17 @@ package io.github.ricciow.rendering
 import io.github.ricciow.Pridge.mc
 import io.github.ricciow.util.PridgeLogger
 import net.minecraft.client.renderer.RenderPipelines
-import net.minecraft.client.gui.GuiGraphics
+//~ if >= 26.1 'GuiGraphics' -> 'GuiGraphicsExtractor' {
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.DeltaTracker
 import com.mojang.blaze3d.platform.NativeImage
 import net.minecraft.client.renderer.texture.DynamicTexture
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.network.chat.ClickEvent.OpenUrl
 import net.minecraft.network.chat.Style
+//? if >= 26.1 {
+import net.minecraft.client.gui.components.ChatComponent
+//?}
 //? if < 1.21.11 {
 /*import net.minecraft.resources.ResourceLocation
 *///?} else {
@@ -33,7 +37,7 @@ class ImagePreviewRenderer {
     private var imageHeight = 100
     private var hasTexture = false
 
-    fun onHudRender(drawContext: GuiGraphics, tickCounter: DeltaTracker) {
+    fun onHudRender(drawContext: GuiGraphicsExtractor, tickCounter: DeltaTracker) {
         if (!mc.gui.chat.isChatFocused) {
             if (this.hasTexture) {
                 clearTexture()
@@ -76,7 +80,9 @@ class ImagePreviewRenderer {
             finder,
             mc.window.guiScaledHeight,
             mc.gui.guiTicks,
-            true
+            //~ if >= 26.1 'true' -> 'ChatComponent.DisplayMode.FOREGROUND' {
+            ChatComponent.DisplayMode.FOREGROUND
+            //~}
         )
 
         return finder.result()
@@ -190,7 +196,7 @@ class ImagePreviewRenderer {
         }
     }
 
-    private fun renderPreview(drawContext: GuiGraphics) {
+    private fun renderPreview(drawContext: GuiGraphicsExtractor) {
         val screenWidth = mc.window.guiScaledWidth
         val screenHeight = mc.window.guiScaledHeight
         val aspectRatio = imageWidth.toFloat() / imageHeight
@@ -241,3 +247,4 @@ class ImagePreviewRenderer {
 
     }
 }
+//~}

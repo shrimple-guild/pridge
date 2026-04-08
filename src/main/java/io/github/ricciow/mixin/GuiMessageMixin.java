@@ -1,7 +1,11 @@
 package io.github.ricciow.mixin;
 
 import io.github.ricciow.util.message.IChatHudLine;
-import net.minecraft.client.GuiMessage;
+//? if < 26.1 {
+/*import net.minecraft.client.GuiMessage;
+*///?} else {
+import net.minecraft.client.multiplayer.chat.GuiMessage;
+//?}
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
