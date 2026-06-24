@@ -95,7 +95,8 @@
         "Your role does not have requirements! But you are",
         "Pong!",
         "restarting",
-        "Process ended..."
+        "Process ended...",
+        "Your role does not have requirements! But you are already maxed out!"
       ],
       "finalFormat": "&e${msg}"
     },
@@ -583,6 +584,23 @@
       "type": "regex",
       "trigger": "AAH! You scared me, (.+)!",
       "finalFormat": "&c&lAAH! &fYou scared me, &e$1&f!",
+      "groupFormatting": {}
+    },
+    {
+      "type": "regex",
+      "trigger": "(.+) was last logged out (.+) ago on (.+)",
+      "finalFormat": "&9&l$1 $2 on &f$3",
+      "groupFormatting": {
+        "2": {
+          "just now": "&ejust logged out",
+          "defaultStr": "&ewas last logged out &f${str} &eago"
+        }
+      }
+    },
+    {
+      "type": "regex",
+      "trigger": "(.+) is currently online in (.+)",
+      "finalFormat": "&9&l$1 &eis currently online in &f$2",
       "groupFormatting": {}
     },
     {
