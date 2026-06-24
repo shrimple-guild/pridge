@@ -32,7 +32,7 @@
   "accessWidener": "pridge.accesswidener",
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "minecraft": ">=${minecraft}",
+    "minecraft": "${mc_dep}",
     "fabric-api": ">=${fapi_version}",
     "fabric-language-kotlin": ">=${fabric_kotlin_version}"
   },

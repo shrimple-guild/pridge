@@ -14,15 +14,19 @@ devauth_version = "1.2.2"
 ["1.21.10"]
 fapi_version = "0.134.1+1.21.10"
 moulconfig_version = "modern-1.21.10:4.7.2"
+mc_dep = "1.21.10"
 
 ["1.21.11"]
 fapi_version = "0.141.1+1.21.11"
 moulconfig_version = "modern-1.21.11:4.7.2"
+mc_dep = "1.21.11"
 
 ["26.1"]
 fapi_version = "0.153.0+26.1.2"
 moulconfig_version = "modern-26.1:4.7.2"
+mc_dep = ">=26.1 <26.2"
 
 ["26.2"]
 fapi_version = "0.153.0+26.2"
 moulconfig_version = "modern-26.2:4.7.2"
+mc_dep = ">=26.2 <26.3"
