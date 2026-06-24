@@ -5,6 +5,9 @@ import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.Component
 import net.minecraft.ChatFormatting
+//?if >= 26.2 {
+import net.minecraft.ChatFormatting.*
+//?}
 
 object TextParser {
     /**
@@ -46,4 +49,11 @@ object TextParser {
             style = Style.EMPTY.withHoverEvent(ShowText(hover))
         }
     }
+    //? if >=26.2 {
+    val ChatFormatting.isColor: Boolean
+        get() = this in listOf(
+            BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD,
+            GRAY, DARK_GRAY, BLUE, GREEN, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE
+        )
+    //?}
 }

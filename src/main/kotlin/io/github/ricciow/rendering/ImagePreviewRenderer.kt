@@ -38,7 +38,9 @@ class ImagePreviewRenderer {
     private var hasTexture = false
 
     fun onHudRender(drawContext: GuiGraphicsExtractor, tickCounter: DeltaTracker) {
-        if (!mc.gui.chat.isChatFocused) {
+        //~if >=26.2 'gui.chat' -> 'gui.hud.chat' {
+        if (!mc.gui.hud.chat.isChatFocused) {
+        //~}
             if (this.hasTexture) {
                 clearTexture()
             }
@@ -48,7 +50,7 @@ class ImagePreviewRenderer {
         val mouseX = mc.mouseHandler.xpos() * mc.window.guiScaledWidth.toDouble() / mc.window.screenWidth
         val mouseY = mc.mouseHandler.ypos() * mc.window.guiScaledHeight.toDouble() / mc.window.screenHeight
 
-        val style = getStyleAtMouse(mouseX, mouseY)
+        val style = getStyleAtMouse(mouseX, mouseY, tickCounter)
         var url: String? = null
         if (style != null) {
             val clickEvent = style.getClickEvent()
@@ -64,7 +66,7 @@ class ImagePreviewRenderer {
         }
     }
 
-    fun getStyleAtMouse(mouseX: Double, mouseY: Double): Style? {
+    fun getStyleAtMouse(mouseX: Double, mouseY: Double, deltaTracker: DeltaTracker): Style? {
         //? if < 1.21.11 {
         /*return mc.gui.chat.getClickedComponentStyleAt(mouseX, mouseY)
         *///?} else {
@@ -75,11 +77,14 @@ class ImagePreviewRenderer {
         )
 
         finder.includeInsertions(true)
-
-        mc.gui.chat.captureClickableText(
+        //~if >= 26.2 'chat' -> 'hud.chat' {
+        mc.gui.hud.chat.captureClickableText(
+        //~}
             finder,
             mc.window.guiScaledHeight,
-            mc.gui.guiTicks,
+            //~if >= 26.2 'guiTicks' -> 'hud.guiTicks' {
+            mc.gui.hud.guiTicks,
+            //~}
             //~ if >= 26.1 'true' -> 'ChatComponent.DisplayMode.FOREGROUND' {
             ChatComponent.DisplayMode.FOREGROUND
             //~}

@@ -12,7 +12,7 @@ import net.minecraft.client.multiplayer.chat.GuiMessageTag
 import net.minecraft.client.multiplayer.chat.GuiMessageSource
 //?}
 import net.minecraft.network.chat.Component
-
+//~if >= 26.2 'gui.chat' -> 'gui.hud.chat' {
 object ChatUtils {
     var nextMessageId = -1
 
@@ -40,9 +40,9 @@ object ChatUtils {
             }
             nextMessageId = id
             //? if < 26.1 {
-            /*mc.gui.chat.addMessage(fullText)
+            /*mc.gui.hud.chat.addMessage(fullText)
             *///?} else {
-            mc.gui.chat.addMessage(fullText, null, GuiMessageSource.SYSTEM_CLIENT, null)
+            mc.gui.hud.chat.addMessage(fullText, null, GuiMessageSource.SYSTEM_CLIENT, null)
             //?}
         }
     }
@@ -50,7 +50,7 @@ object ChatUtils {
     private fun replaceInPlace(text: Component, id: Int) {
         var replaced = false
 
-        val messages = mc.gui.chat.allMessages
+        val messages = mc.gui.hud.chat.allMessages
         for (i in messages.indices) {
             val currentLine = messages[i]
             val lineId = currentLine.pridgeId
@@ -70,7 +70,9 @@ object ChatUtils {
                     text,
                     null,
                     GuiMessageSource.SYSTEM_CLIENT,
-                    if (mc.isSingleplayer) GuiMessageTag.systemSinglePlayer() else GuiMessageTag.system()
+                    //~if >= 26.2 'isSingleplayer' -> 'mc.singleplayerServer?.isPublished ?: false' {
+                    if (mc.singleplayerServer?.isPublished ?: false) GuiMessageTag.systemSinglePlayer() else GuiMessageTag.system()
+                    //~}
                 ).apply {
                     pridgeId = id
                 }
@@ -80,21 +82,22 @@ object ChatUtils {
         }
 
         if (replaced) {
-            val tempScrolledLines = mc.gui.chat.chatScrollbarPos
-            mc.gui.chat.refreshTrimmedMessages()
-            mc.gui.chat.chatScrollbarPos = tempScrolledLines
+            val tempScrolledLines = mc.gui.hud.chat.chatScrollbarPos
+            mc.gui.hud.chat.refreshTrimmedMessages()
+            mc.gui.hud.chat.chatScrollbarPos = tempScrolledLines
         }
     }
 
     private fun deletePreviousMessage(id: Int) {
-        val initialSize = mc.gui.chat.allMessages.size
+        val initialSize = mc.gui.hud.chat.allMessages.size
 
-        mc.gui.chat.allMessages.removeIf {
+        mc.gui.hud.chat.allMessages.removeIf {
             it.pridgeId == id
         }
 
-        if (initialSize != mc.gui.chat.allMessages.size) {
-            mc.gui.chat.refreshTrimmedMessages()
+        if (initialSize != mc.gui.hud.chat.allMessages.size) {
+            mc.gui.hud.chat.refreshTrimmedMessages()
         }
     }
 }
+//~}
