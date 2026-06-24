@@ -70,7 +70,7 @@ object ChatUtils {
                     text,
                     null,
                     GuiMessageSource.SYSTEM_CLIENT,
-                    //~if >= 26.2 'isSingleplayer' -> 'mc.singleplayerServer?.isPublished ?: false' {
+                    //~if >= 26.2 'mc.isSingleplayer' -> 'mc.singleplayerServer?.isPublished ?: false' {
                     if (mc.singleplayerServer?.isPublished ?: false) GuiMessageTag.systemSinglePlayer() else GuiMessageTag.system()
                     //~}
                 ).apply {
